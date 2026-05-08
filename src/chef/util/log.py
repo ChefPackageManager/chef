@@ -1,13 +1,13 @@
-import dataclasses
+import itertools
 import os
 import sys
 import threading
 import time
 
-import itertools
+from dataclasses import dataclass
 
 
-@dataclasses.dataclass
+@dataclass
 class SpinnerThread:
     thread: threading.Thread
     event: threading.Event
@@ -23,6 +23,10 @@ def _terminal_supports_colour() -> bool:
 
 
 def info(message: str) -> None:
+    if _terminal_supports_colour():
+        print(f"\033[1m[INFO]\033[0m: {message}")
+        return
+
     print(f"[INFO]: {message}")
 
 

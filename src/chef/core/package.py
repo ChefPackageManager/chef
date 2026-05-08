@@ -1,10 +1,10 @@
-import dataclasses
 import pathlib
+from dataclasses import dataclass
 
-from chef.core import Result
+from chef.core.core import ActionResult
 
 
-@dataclasses.dataclass
+@dataclass
 class Package:
     name: str
     url: str
@@ -12,14 +12,14 @@ class Package:
     signer: str
     path: pathlib.Path
 
-    def download(self, download_path: pathlib.Path) -> Result:
+    def download(self, download_path: pathlib.Path) -> ActionResult:
         raise NotImplementedError
 
-    def install(self) -> Result:
+    def install(self) -> ActionResult:
         raise NotImplementedError
 
-    def upgrade(self) -> Result:
+    def upgrade(self) -> ActionResult:
         raise NotImplementedError
 
-    def verify(self) -> Result:
+    def verify(self) -> ActionResult:
         raise NotImplementedError

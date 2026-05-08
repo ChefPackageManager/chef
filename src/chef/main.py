@@ -1,17 +1,19 @@
 import sys
 
-from chef.cli.util import argparser
-from chef.cli.util.delegate import delegate
-from chef.cli.util.context import Context
+from chef.cli.constants import RECOGNISED_ARGUMENTS
+from chef.cli.util import Context, delegate, parse_args
+
 
 def crash() -> None:
     sys.exit(1)
 
-def main() -> None:
-    parser = argparser.ArgParser()
-    parser.construct()
 
-    args = parser.parse()
+def main() -> None:
+    parsed = parse_args(
+        prog="chef",
+        description="Security-focused utility for installing software for macOS & Linux.",
+        recognised=RECOGNISED_ARGUMENTS
+    )
 
     context = Context(crash)
-    delegate(context, args)
+    delegate(RECOGNISED_ARGUMENTS, context, parsed)
