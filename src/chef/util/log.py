@@ -40,7 +40,7 @@ def ok(message: str) -> None:
 
 def error(message: str) -> None:
     if _terminal_supports_colour():
-        print(f"\033[1;31m[OK]\033[0m: {message}")
+        print(f"\033[1;31m[ERROR]\033[0m: {message}")
         return
 
     print(f"[ERROR]: {message}")
@@ -53,7 +53,7 @@ def spinner() -> SpinnerThread:
         while not stopped.is_set():
             sys.stdout.write(next(parts))
             sys.stdout.flush()
-            time.sleep(0.35)
+            time.sleep(0.175)
             sys.stdout.write("\b")
 
     signal_stop = threading.Event()

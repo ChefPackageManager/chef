@@ -3,16 +3,20 @@ import enum
 from dataclasses import dataclass
 from typing import Callable, Any
 
+from chef.core.chef import Chef
+
 
 class Context:
     """
         A context reflecting the state of the app to the CLI, shared between the individual CLI functions and `main`.
     """
     verbose: bool
+    chef: Chef
     crash: Callable[[], None]
 
-    def __init__(self, on_crash: Callable[[], None]):
+    def __init__(self, on_crash: Callable[[], None], chef: Chef):
         self.crash = on_crash
+        self.chef = chef
 
 
 class ArgumentKey(enum.Enum):
@@ -21,6 +25,7 @@ class ArgumentKey(enum.Enum):
     INSTALL = enum.auto()
     UPGRADE = enum.auto()
     AUDIT = enum.auto()
+    PACKAGES = enum.auto()
 
 
 @dataclass
@@ -54,7 +59,7 @@ def parse_args(
     # this part *extracts* the parsed values and converts it into a
     # much nicer format which can be retrieved via an `ArgumentKey`.
     for key, arg in recognised.items():
-        long_name = arg.long_name[2:] # remove the "--" prefix
+        long_name = arg.long_name[2:]  # remove the "--" prefix
         parsed_value = getattr(parsed, long_name)
 
         # indicates that no value likely was provided, or the user provided a negative flag.

@@ -1,25 +1,51 @@
-import pathlib
+import json
 from dataclasses import dataclass
 
-from chef.core.core import ActionResult
+from enum import Enum, auto
+from pathlib import Path
+from typing import Any
+
+@dataclass
+class PackageScript:
+    build: Path | None
+    verify: Path | None
 
 
 @dataclass
 class Package:
     name: str
+    description: str
+    version: str
     url: str
     sha256: str
-    signer: str
-    path: pathlib.Path
+    script: PackageScript
 
-    def download(self, download_path: pathlib.Path) -> ActionResult:
-        raise NotImplementedError
 
-    def install(self) -> ActionResult:
-        raise NotImplementedError
+def extract(path: Path) -> Package:
+    # TODO: DRY this function up!
 
-    def upgrade(self) -> ActionResult:
-        raise NotImplementedError
+    data: Any
 
-    def verify(self) -> ActionResult:
-        raise NotImplementedError
+    with open(str(path), "r") as f:
+        data = json.load(f)
+
+    package = Package(
+        name=data["name"],
+        description=data["description"],
+        version=data["version"],
+        url=data["url"].format(version=data["version"]),
+        sha256=data["sha256"],
+        script=PackageScript(
+            build=None,
+            verify=None
+        )
+    )
+
+    if (build_script_path := path.parent / "build.sh").exists():
+        package.script.build = build_script_path
+
+    if (verify_script_path := path.parent / "verify.sh").exists():
+        package.script.verify = verify_script_path
+
+    return package
+

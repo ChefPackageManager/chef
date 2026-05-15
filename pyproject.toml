@@ -8,10 +8,11 @@ authors = [
     { name = "Axel H. Karlsson", email = "git@axelkarlsson.se" }
 ]
 
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 
 dependencies = [
-    "build>=1.4.4"
+    "build>=1.4.4",
+    "requests>=2.34.2",
 ]
 
 [project.scripts]

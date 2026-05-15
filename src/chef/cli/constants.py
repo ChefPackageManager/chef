@@ -1,9 +1,9 @@
-from chef.cli.command import (
+from chef.cli.commands import (
     verbose,
     version,
     install,
     upgrade,
-    audit
+    audit, packages
 )
 from chef.cli.util import Argument, ArgumentKey
 
@@ -36,5 +36,11 @@ RECOGNISED_ARGUMENTS = {
         shorthand="-A",
         switch=True,
         handler=audit
+    ),
+    ArgumentKey.PACKAGES: Argument(
+        long_name="--packages",
+        shorthand="-P",
+        switch=True,
+        handler=packages
     )
 }
