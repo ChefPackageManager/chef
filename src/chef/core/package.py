@@ -1,9 +1,9 @@
 import json
 from dataclasses import dataclass
 
-from enum import Enum, auto
 from pathlib import Path
 from typing import Any
+
 
 @dataclass
 class PackageScript:
@@ -22,8 +22,6 @@ class Package:
 
 
 def extract(path: Path) -> Package:
-    # TODO: DRY this function up!
-
     data: Any
 
     with open(str(path), "r") as f:
@@ -48,4 +46,3 @@ def extract(path: Path) -> Package:
         package.script.verify = verify_script_path
 
     return package
-

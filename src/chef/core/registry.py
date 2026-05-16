@@ -1,9 +1,14 @@
-import json
 from pathlib import Path
-from typing import List, Any
+from typing import List
 
 from chef.core.package import Package, extract
 from chef.util import git
+
+
+class PackageNotInRegistryError(Exception):
+    def __init__(self):
+        super().__init__("Package is not available in the registry!")
+
 
 class Registry:
     url: str
@@ -28,3 +33,6 @@ class Registry:
             packages.append(package)
 
         return packages
+
+    def has(self, package: Package) -> bool:
+        return package.name in self.packages()

@@ -24,7 +24,7 @@ class ArgumentKey(enum.Enum):
     VERSION = enum.auto()
     INSTALL = enum.auto()
     UPGRADE = enum.auto()
-    AUDIT = enum.auto()
+    REMOVE = enum.auto()
     PACKAGES = enum.auto()
 
 
