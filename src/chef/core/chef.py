@@ -101,7 +101,6 @@ class Chef:
         try:
             r.raise_for_status()
         except Exception as e:
-            package_path.rmdir()
             raise e
 
         filename = package.url.split("/")[-1]
