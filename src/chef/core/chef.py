@@ -43,6 +43,8 @@ class ChefPath:
 
 
 class Chef:
+    """ Handles the core functionality of the package manager, such as installing, building, updating, etc """
+
     registry: Registry
     path: ChefPath
 
@@ -60,6 +62,7 @@ class Chef:
         )
 
     def bootstrap(self) -> None:
+        """ Initialises the required directories needed by Chef """
         if not self.path.prefix.exists():
             self.path.prefix.mkdir()
 
@@ -76,9 +79,11 @@ class Chef:
             self.registry.download()
 
     def installed(self, package: Package) -> bool:
+        """ Checks if a given package is installed or not """
         return (self.path.bin / package.name).exists()
 
     def build(self, cwd: Path, package: Package) -> None:
+        """ Builds a given package from source in the context of the directory given """
         env = os.environ.copy()
         env["CHEF_HOME"] = str(self.path.prefix)
         env["PACKAGE_NAME"] = package.name
@@ -90,6 +95,7 @@ class Chef:
         )
 
     def install(self, package: Package) -> None:
+        """ This is the entrypoint for the installation of a new package. """
         if self.installed(package):
             raise PackageAlreadyInstalledError(package.name)
 
@@ -117,9 +123,11 @@ class Chef:
         self.build(cwd=extracted_at, package=package)
 
     def upgrade(self) -> None:
+        """ Upgrades packages, but currently only synchronises with the remote registry """
         self.registry.update()
 
     def remove(self, package: Package) -> None:
+        """ Removes an installed package """
         if not self.installed(package):
             raise PackageNotInstalledError(package.name)
 
@@ -128,6 +136,7 @@ class Chef:
         )
 
     def find_package(self, package_name: str) -> Package | None:
+        """ Finds a package by its package name """
         filtered = [package for package in self.registry.packages() if package.name == package_name]
 
         if len(filtered) == 0:
@@ -136,4 +145,5 @@ class Chef:
         return filtered[0]
 
     def packages(self) -> List[Package]:
+        """ Lists all packages in Chef's associated registry """
         return self.registry.packages()

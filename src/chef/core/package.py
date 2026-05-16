@@ -22,6 +22,7 @@ class Package:
 
 
 def extract(path: Path) -> Package:
+    """ Extracts a Chef package into a Package object """
     data: Any
 
     with open(str(path), "r") as f:

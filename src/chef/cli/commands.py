@@ -7,6 +7,7 @@ from chef.util import log
 
 
 def install(context: Context, package_name: str) -> None:
+    """ Invoked when running `chef -i ...` """
     try:
         package = context.chef.find_package(package_name)
 
@@ -19,6 +20,7 @@ def install(context: Context, package_name: str) -> None:
 
 
 def upgrade(context: Context, value: Any) -> None:
+    """ Invoked when running `chef -U` """
     spinner = log.spinner()
 
     context.chef.upgrade()
@@ -26,6 +28,7 @@ def upgrade(context: Context, value: Any) -> None:
 
 
 def remove(context: Context, package_name: str) -> None:
+    """ Invoked when running `chef -R ...` """
     try:
         package = context.chef.find_package(package_name)
 
@@ -38,10 +41,12 @@ def remove(context: Context, package_name: str) -> None:
 
 
 def verbose(context: Context, value: Any) -> None:
+    """ Invoked when running `chef -v` """
     context.verbose = value
 
 
 def packages(context: Context, value: Any) -> None:
+    """ Invoked when running `chef -P` """
     print("Packages:")
 
     for package in context.chef.packages():
@@ -50,4 +55,5 @@ def packages(context: Context, value: Any) -> None:
 
 
 def version(context: Context, value: Any) -> None:
+    """ Invoked when running `chef -V` """
     print(__version__)
