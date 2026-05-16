@@ -2,7 +2,6 @@ import os
 import shutil
 import subprocess
 from dataclasses import dataclass
-from hashlib import sha256
 from pathlib import Path
 from typing import List
 
@@ -10,7 +9,7 @@ import requests
 
 from chef.core.package import Package
 from chef.core.registry import Registry
-from chef.util import file
+from chef.util import file, checksum
 
 
 class PackageAlreadyInstalledError(Exception):
@@ -23,15 +22,9 @@ class PackageNotInstalledError(Exception):
         super().__init__(f"Package: {package_name} is not installed!")
 
 
-def verify(archive: Path, package: Package) -> bool:
-    hasher = sha256()
-
-    with open(archive, "rb") as f:
-        hasher.update(
-            f.read()
-        )
-
-    return hasher.hexdigest() == package.sha256
+class PackageIntegrityVerificationFailedError(Exception):
+    def __init__(self, package_name: str):
+        super().__init__(f"Package: {package_name} failed verification and may've be tampered with!")
 
 
 @dataclass
@@ -72,7 +65,9 @@ class Chef:
         if not self.path.registries.exists():
             self.path.registries.mkdir()
 
-        shutil.rmtree(self.path.tmp)
+        if self.path.tmp.exists():
+            shutil.rmtree(self.path.tmp)
+
         self.path.tmp.mkdir()
 
         if not self.registry.path.exists():
@@ -82,7 +77,7 @@ class Chef:
         """ Checks if a given package is installed or not """
         return (self.path.bin / package.name).exists()
 
-    def build(self, cwd: Path, package: Package) -> None:
+    def build(self, package: Package, cwd: Path) -> None:
         """ Builds a given package from source in the context of the directory given """
         env = os.environ.copy()
         env["CHEF_HOME"] = str(self.path.prefix)
@@ -91,16 +86,15 @@ class Chef:
         subprocess.run(
             ["/usr/bin/env", "sh", str(package.script.build)],
             cwd=cwd,
-            env=env
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
         )
 
     def install(self, package: Package) -> None:
         """ This is the entrypoint for the installation of a new package. """
         if self.installed(package):
             raise PackageAlreadyInstalledError(package.name)
-
-        package_path = self.path.bin / package.name
-        package_path.mkdir()
 
         r = requests.get(package.url)
 
@@ -115,12 +109,14 @@ class Chef:
         with open(str(self.path.tmp / filename), "wb") as f:
             f.write(r.content)
 
-        if not verify(self.path.tmp / filename, package):
-            raise ValueError("Failed to verify that the downloaded file wasn't tampered with or corrupted!")
+        if not checksum.verify(self.path.tmp / filename, against=package.sha256):
+            raise PackageIntegrityVerificationFailedError
 
         extracted_at = file.unpack(self.path.tmp / filename)
 
-        self.build(cwd=extracted_at, package=package)
+        (self.path.bin / package.name).mkdir()
+
+        self.build(package, cwd=extracted_at)
 
     def upgrade(self) -> None:
         """ Upgrades packages, but currently only synchronises with the remote registry """
