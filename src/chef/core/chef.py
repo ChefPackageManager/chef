@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -82,6 +83,7 @@ class Chef:
         env = os.environ.copy()
         env["CHEF_HOME"] = str(self.path.prefix)
         env["PACKAGE_NAME"] = package.name
+        env["OS"] = "MACOS" if platform.system() == "Darwin" else "LINUX"
 
         subprocess.run(
             ["/usr/bin/env", "sh", str(package.script.build)],
