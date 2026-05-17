@@ -1,5 +1,5 @@
 [project]
-name = "chef"
+name = "chef-package-manager"
 description = "Security-focused utility for installing software for macOS & Linux."
 
 dynamic = ["version"]
