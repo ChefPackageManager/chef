@@ -27,7 +27,10 @@ def extension(path: Path) -> str:
     # if the extension is ".gz" or ."xz", just check it to see if
     # the previous substring is "tar", and in such a case, utilise it.
 
-    if filename_extension in ("gz", "xz") and (long_ext := filename.rsplit(".", 2)[-2:]) == "tar":
+    if (
+        filename_extension in ("gz", "xz")
+        and (long_ext := filename.rsplit(".", 2)[-2:]) == "tar"
+    ):
         filename_extension = long_ext
 
     return filename_extension
@@ -44,6 +47,8 @@ def unpack(path: Path) -> Path:
         case "zip":
             rv = _zip(path)
         case _:
-            raise UnpackError(f"Cannot unpack the provided file extension: {extension(path)}")
+            raise UnpackError(
+                f"Cannot unpack the provided file extension: {extension(path)}"
+            )
 
     return rv

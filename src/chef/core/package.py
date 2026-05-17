@@ -22,7 +22,7 @@ class Package:
 
 
 def extract(path: Path) -> Package:
-    """ Extracts a Chef package into a Package object """
+    """Extracts a Chef package into a Package object"""
     data: Any
 
     with open(str(path), "r") as f:
@@ -34,10 +34,7 @@ def extract(path: Path) -> Package:
         version=data["version"],
         url=data["url"].format(version=data["version"]),
         sha256=data["sha256"],
-        script=PackageScript(
-            build=None,
-            verify=None
-        )
+        script=PackageScript(build=None, verify=None),
     )
 
     if (build_script_path := path.parent / "build.sh").exists():

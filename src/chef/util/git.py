@@ -41,11 +41,7 @@ def clone(path: Path, url: str) -> None:
         raise GitNotInstalledError
 
     result = subprocess.run(
-        args=[
-            _git_executable(), "clone", url
-        ],
-        cwd=str(path),
-        capture_output=True
+        args=[_git_executable(), "clone", url], cwd=str(path), capture_output=True
     )
 
     if result.returncode != 0:
@@ -57,11 +53,7 @@ def pull(at: Path) -> None:
         raise GitNotInstalledError
 
     result = subprocess.run(
-        args=[
-            _git_executable(), "pull"
-        ],
-        cwd=str(at),
-        capture_output=True
+        args=[_git_executable(), "pull"], cwd=str(at), capture_output=True
     )
 
     if result.returncode != 0:

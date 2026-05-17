@@ -1,14 +1,7 @@
 import sys
 from pathlib import Path
 
-from chef.cli.commands import (
-    verbose,
-    version,
-    install,
-    upgrade,
-    remove,
-    packages
-)
+from chef.cli.commands import verbose, version, install, upgrade, remove, packages
 from chef.cli.util import Context, delegate, parse_args, ArgumentKey, Argument
 from chef.core.chef import Chef
 from chef.util import log
@@ -19,39 +12,21 @@ REPO_URL = "https://github.com/ChefPackageManager/registry.git"
 
 RECOGNISED_ARGUMENTS = {
     ArgumentKey.VERBOSE: Argument(
-        long_name="--verbose",
-        shorthand="-v",
-        switch=True,
-        handler=verbose
+        long_name="--verbose", shorthand="-v", switch=True, handler=verbose
     ),
     ArgumentKey.VERSION: Argument(
-        long_name="--version",
-        shorthand="-V",
-        switch=True,
-        handler=version
+        long_name="--version", shorthand="-V", switch=True, handler=version
     ),
     ArgumentKey.INSTALL: Argument(
-        long_name="--install",
-        shorthand="-i",
-        handler=install
+        long_name="--install", shorthand="-i", handler=install
     ),
     ArgumentKey.UPGRADE: Argument(
-        long_name="--upgrade",
-        shorthand="-U",
-        switch=True,
-        handler=upgrade
+        long_name="--upgrade", shorthand="-U", switch=True, handler=upgrade
     ),
-    ArgumentKey.REMOVE: Argument(
-        long_name="--remove",
-        shorthand="-R",
-        handler=remove
-    ),
+    ArgumentKey.REMOVE: Argument(long_name="--remove", shorthand="-R", handler=remove),
     ArgumentKey.PACKAGES: Argument(
-        long_name="--packages",
-        shorthand="-P",
-        switch=True,
-        handler=packages
-    )
+        long_name="--packages", shorthand="-P", switch=True, handler=packages
+    ),
 }
 
 
@@ -63,7 +38,7 @@ def main() -> None:
     parsed = parse_args(
         prog="chef",
         description="Security-focused utility for installing software for macOS & Linux.",
-        recognised=RECOGNISED_ARGUMENTS
+        recognised=RECOGNISED_ARGUMENTS,
     )
 
     chef = Chef(CHEF_HOME, REPO_URL)

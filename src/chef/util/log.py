@@ -18,8 +18,10 @@ class SpinnerThread:
 
 
 def _terminal_supports_colour() -> bool:
-    return (os.environ.get("COLORTERM", "") == "truecolor" or
-            os.environ.get("TERM", "") == "xterm-256color")
+    return (
+        os.environ.get("COLORTERM", "") == "truecolor"
+        or os.environ.get("TERM", "") == "xterm-256color"
+    )
 
 
 def info(message: str) -> None:
@@ -61,7 +63,4 @@ def spinner() -> SpinnerThread:
 
     thread.start()
 
-    return SpinnerThread(
-        thread=thread,
-        event=signal_stop
-    )
+    return SpinnerThread(thread=thread, event=signal_stop)

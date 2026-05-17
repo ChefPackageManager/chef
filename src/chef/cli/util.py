@@ -8,8 +8,9 @@ from chef.core.chef import Chef
 
 class Context:
     """
-        A context reflecting the state of the app to the CLI, shared between the individual CLI functions and `main`.
+    A context reflecting the state of the app to the CLI, shared between the individual CLI functions and `main`.
     """
+
     verbose: bool
     chef: Chef
     crash: Callable[[], None]
@@ -37,11 +38,9 @@ class Argument:
 
 
 def parse_args(
-        prog: str,
-        description: str,
-        recognised: dict[ArgumentKey, Argument]
+    prog: str, description: str, recognised: dict[ArgumentKey, Argument]
 ) -> dict[ArgumentKey, Any]:
-    """ Parses `argv` on the basis of the `args` parameter accepted on this function. """
+    """Parses `argv` on the basis of the `args` parameter accepted on this function."""
     parser = argparse.ArgumentParser(prog=prog, description=description)
 
     # we need to add the arguments defined to be parsed to the parser
@@ -50,7 +49,7 @@ def parse_args(
         parser.add_argument(
             value.long_name,
             value.shorthand,
-            action="store_true" if value.switch else None
+            action="store_true" if value.switch else None,
         )
 
     parsed = parser.parse_args()
@@ -71,7 +70,11 @@ def parse_args(
     return rv
 
 
-def delegate(all_args: dict[ArgumentKey, Argument], context: Context, provided_args: dict[ArgumentKey, Any]) -> None:
-    """ Delegates the provided CLI arguments to their respective handlers. """
+def delegate(
+    all_args: dict[ArgumentKey, Argument],
+    context: Context,
+    provided_args: dict[ArgumentKey, Any],
+) -> None:
+    """Delegates the provided CLI arguments to their respective handlers."""
     for key, value in provided_args.items():
         all_args[key].handler(context, value)
