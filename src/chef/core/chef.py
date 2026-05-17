@@ -25,7 +25,9 @@ class PackageNotInstalledError(Exception):
 
 class PackageIntegrityVerificationFailedError(Exception):
     def __init__(self, package_name: str):
-        super().__init__(f"Package: {package_name} failed verification and may've be tampered with!")
+        super().__init__(
+            f"Package: {package_name} failed verification and may've be tampered with!"
+        )
 
 
 @dataclass
@@ -37,7 +39,7 @@ class ChefPath:
 
 
 class Chef:
-    """ Handles the core functionality of the package manager, such as installing, building, updating, etc """
+    """Handles the core functionality of the package manager, such as installing, building, updating, etc"""
 
     registry: Registry
     path: ChefPath
@@ -47,16 +49,13 @@ class Chef:
             prefix,
             bin=prefix / "bin",
             registries=prefix / "registries",
-            tmp=prefix / "tmp"
+            tmp=prefix / "tmp",
         )
 
-        self.registry = Registry(
-            registry_url,
-            self.path.registries / "registry"
-        )
+        self.registry = Registry(registry_url, self.path.registries / "registry")
 
     def bootstrap(self) -> None:
-        """ Initialises the required directories needed by Chef """
+        """Initialises the required directories needed by Chef"""
         if not self.path.prefix.exists():
             self.path.prefix.mkdir()
 
@@ -75,11 +74,11 @@ class Chef:
             self.registry.download()
 
     def installed(self, package: Package) -> bool:
-        """ Checks if a given package is installed or not """
+        """Checks if a given package is installed or not"""
         return (self.path.bin / package.name).exists()
 
     def build(self, package: Package, cwd: Path) -> None:
-        """ Builds a given package from source in the context of the directory given """
+        """Builds a given package from source in the context of the directory given"""
         env = os.environ.copy()
         env["CHEF_HOME"] = str(self.path.prefix)
         env["PACKAGE_NAME"] = package.name
@@ -90,11 +89,11 @@ class Chef:
             cwd=cwd,
             env=env,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            stderr=subprocess.DEVNULL,
         )
 
     def install(self, package: Package) -> None:
-        """ This is the entrypoint for the installation of a new package. """
+        """This is the entrypoint for the installation of a new package."""
         if self.installed(package):
             raise PackageAlreadyInstalledError(package.name)
 
@@ -120,21 +119,23 @@ class Chef:
         self.build(package, cwd=extracted_at)
 
     def upgrade(self) -> None:
-        """ Upgrades packages, but currently only synchronises with the remote registry """
+        """Upgrades packages, but currently only synchronises with the remote registry"""
         self.registry.update()
 
     def remove(self, package: Package) -> None:
-        """ Removes an installed package """
+        """Removes an installed package"""
         if not self.installed(package):
             raise PackageNotInstalledError(package.name)
 
-        shutil.rmtree(
-            self.path.bin / package.name
-        )
+        shutil.rmtree(self.path.bin / package.name)
 
     def find_package(self, package_name: str) -> Package | None:
-        """ Finds a package by its package name """
-        filtered = [package for package in self.registry.packages() if package.name == package_name]
+        """Finds a package by its package name"""
+        filtered = [
+            package
+            for package in self.registry.packages()
+            if package.name == package_name
+        ]
 
         if len(filtered) == 0:
             return None
@@ -142,5 +143,5 @@ class Chef:
         return filtered[0]
 
     def packages(self) -> List[Package]:
-        """ Lists all packages in Chef's associated registry """
+        """Lists all packages in Chef's associated registry"""
         return self.registry.packages()
