@@ -1,4 +1,5 @@
 import json
+import platform
 from dataclasses import dataclass
 
 from pathlib import Path
@@ -32,10 +33,21 @@ def extract(path: Path) -> Package:
         name=data["name"],
         description=data["description"],
         version=data["version"],
-        url=data["url"].format(version=data["version"]),
-        sha256=data["sha256"],
+        url="",  # will be replaced
+        sha256="",  # will be replaced
         script=PackageScript(build=None, verify=None),
     )
+
+    # This ensures the code follow the registry's specification,
+    # allowing the usage of Linux or macOS specific download URLs.
+    if data["linux"] or data["macOS"]:
+        os = "linux" if platform.system() == "Linux" else "macOS"
+
+        package.url = data[os]["url"].format(version=data["version"])
+        package.sha256 = data[os]["sha256"]
+    else:
+        package.url = data["url"]
+        package.sha256 = data["sha256"]
 
     if (build_script_path := path.parent / "build.sh").exists():
         package.script.build = build_script_path
